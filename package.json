@@ -1,0 +1,14 @@
+{
+  "name": "livecontrol",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {},
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^0.21.1",
+    "dotenv": "^10.0.0",
+    "fluent-ffmpeg": "^2.1.2"
+  }
+}
