@@ -25,6 +25,13 @@ Create a `.env` file in the client directory.
     REACT_APP_SERVER_HOST=localhost
     REACT_APP_SERVER_PORT=3001
 
+    
+Create a `.env` file in the root directory.
+    The env file should have the following fields:
+
+    SERVER_HOST=localhost
+    SERVER_PORT=3001
+
 Run `npm install` from the client, and server directories, as well as this directory. 
 
 Alternatively `node setup.js` will walk you through the process.
