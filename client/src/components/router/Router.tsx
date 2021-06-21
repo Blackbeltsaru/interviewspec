@@ -9,14 +9,6 @@ function Router() {
     return (
         <BrowserRouter>
             <main>
-                <nav>
-                    <ul>
-                        <li><Link to='/'>{'Home'}</Link></li>
-                        <li><Link to={`/watch/${vidId}`}>{'Watch'}</Link></li>
-                        <li><Link to={`/watch/11`}>{'Watch'}</Link></li>
-
-                    </ul>
-                </nav>
                 <Switch>
                     <Route path="/" exact component={Home} />
                     <Route path="/watch/:vidId" component={Watcher} />
