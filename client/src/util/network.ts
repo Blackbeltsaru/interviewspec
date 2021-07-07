@@ -1,4 +1,4 @@
-import { Video } from "../types/Video";
+import { Video } from "typedefs";
 import axios from 'axios';
 
 /**

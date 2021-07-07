@@ -1,6 +1,6 @@
 import React, { ChangeEvent, useEffect, useRef, useState } from 'react';
 import { useParams } from 'react-router';
-import { Video } from '../../types/Video';
+import { Video } from 'typedefs';
 import { readOneVidById } from '../../util/network';
 import ErrorDisplay from '../errordisplay/ErrorDisplay';
 import Loader from '../loader/Loader';
