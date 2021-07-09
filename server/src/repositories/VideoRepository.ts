@@ -1,10 +1,15 @@
-import { ErrorableResponse, Video, VideoEntity } from "typedefs";
+import { ErrorableResponse, Video, VideoEntity, VideoEntityFactory } from "typedefs";
+import { VideoFactory, VIDEO_FIELDS } from "typedefs/src/Video";
 import VideoDAO from "../daos/VideoDAO";
 import Repository from "./Repository";
 
+//TODO: This should probably be pulled from the DB at some point
+//  When / how / how often should this happen?
+const MAX_ID_LENGTH = 128;
+
 const VideoRepository: Repository<Video> = class {
     static async create(video: Video): Promise<ErrorableResponse<string>> {
-        const validErr = isInvalid(video);
+        const validErr = isVideoInvalid(video);
         if (validErr) return [null, validErr];
 
         try {
@@ -16,7 +21,7 @@ const VideoRepository: Repository<Video> = class {
         }
     }
     static async readOneById(id: string): Promise<ErrorableResponse<Video>> {
-        const validErr = isInvalid(id);
+        const validErr = isStringInvalid(id);
         if (validErr) return [null, validErr];
         try {
             const videoEntity = await VideoDAO.readOneById(id);
@@ -45,7 +50,7 @@ const VideoRepository: Repository<Video> = class {
         }
     }
     static async update(video: Video): Promise<ErrorableResponse<void>> {
-        const validErr = isInvalid(video);
+        const validErr = isVideoInvalid(video);
         if (validErr) return [null, validErr];
 
         try {
@@ -57,7 +62,7 @@ const VideoRepository: Repository<Video> = class {
         }
     }
     static async delete(video: Video): Promise<ErrorableResponse<void>> {
-        const validErr = isInvalid(video);
+        const validErr = isVideoInvalid(video);
         if (validErr) return [null, validErr];
 
         try {
@@ -70,16 +75,58 @@ const VideoRepository: Repository<Video> = class {
     }
 }
 
-function isInvalid(id: string): Error | null;
-function isInvalid(video: Video): Error | null;
-function isInvalid(data: any): Error | null {
-    throw new Error("Method not implemented.");
+function isStringInvalid(id: string): Error | null {
+    // Typescript is not runtime validation
+    if (typeof id !== 'string')
+        return new Error('Value must be a string type');
+    id.trim();
+    // Ensure ID will fit in column
+    if (id.length > MAX_ID_LENGTH)
+        return new Error(`Value must be shorter than ${MAX_ID_LENGTH} characters`);
+    if (id.length <= 0)
+        return new Error('Value cannot be empty');
+    //TODO: Do we want to verify ID character encoding?
+    return null;
 }
+
+function isVideoInvalid(video: Video): Error | null {
+    // Typescript is not runtime validation
+    if (typeof video !== 'object')
+        return new Error('Video must be an object type');
+    const properties = Object.keys(video);
+    // Don't allow extra properties - likely not a problem
+    //  but there is a small risk of something wonky going on
+    //  with prototype injection
+    const fields = Object.values(VIDEO_FIELDS);
+    if (properties.length > fields.length)
+        return new Error(`Object ${video} has unknown fields`);
+    // Validate the properties on the object
+    for (let i = 0; i < fields.length; i++) {
+        const fieldName = fields[i];
+        if (!video.hasOwnProperty(VIDEO_FIELDS[fieldName]))
+            return new Error(`Object ${video} must have field: ${fieldName}`);
+        const error = isPropertyInvalid(video, fieldName);
+        if (error) return error;
+    }
+    return null;
+}
+
+function isPropertyInvalid(video: Video, fieldName: VIDEO_FIELDS): Error | null {
+    switch (fieldName) {
+        case VIDEO_FIELDS.videoId:
+            return isStringInvalid(video.videoId);
+        case VIDEO_FIELDS.title:
+            return isStringInvalid(video.title);
+        case VIDEO_FIELDS.filePath:
+            return isStringInvalid(video.filePath);
+    }
+}
+
 function transformToEntity(video: Video): VideoEntity {
-    throw new Error("Method not implemented.");
+    return VideoEntityFactory(video.title, video.filePath, video.videoId);
 }
 function transformFromEntity(videoEntity: VideoEntity): Video {
-    throw new Error("Method not implemented.");
+    return VideoFactory(videoEntity.title, videoEntity.file_path, videoEntity.video_id);
 }
 
 export default VideoRepository
