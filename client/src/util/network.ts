@@ -10,9 +10,8 @@ import axios from 'axios';
  * best practices so I'll avoid that for now
  */
 export async function readOneVidById(vidId: string): Promise<Video> {
-    //TODO url
     try {
-        //NOTE: Hard coding the protocol here is not really good practice - since I expect this to always be local host - will not adjust
+        //TODO: Hard coding the protocol here is not really good practice - since I expect this to always be local host - will not adjust
         const response = await axios.get<Video>(`http://${process.env.REACT_APP_SERVER_HOST}:${process.env.REACT_APP_SERVER_PORT}/videos/${vidId}`);
         if (response.status !== 200) throw new Error(response.status.toString());
         return response.data;
@@ -25,7 +24,7 @@ export async function readOneVidById(vidId: string): Promise<Video> {
 
 export async function readManyVidIds(): Promise<Array<string>> {
     try {
-        //NOTE: Hard coding the protocol here is not really good practice - since I expect this to always be local host - will not adjust
+        //TODO: Hard coding the protocol here is not really good practice - since I expect this to always be local host - will not adjust
         const response = await axios.get<Array<string>>(`http://${process.env.REACT_APP_SERVER_HOST}:${process.env.REACT_APP_SERVER_PORT}/videos`);
         if (response.status !== 200) throw new Error(response.status.toString());
         return response.data;
